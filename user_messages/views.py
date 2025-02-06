@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.urls import reverse_lazy
 from django.views.generic import (
     ListView,
@@ -17,8 +18,18 @@ class MessageListView(ListView):
     template_name = "user_messages/message_list.html"
 
     def get_queryset(self):
-        """Возвращает сообщения, принадлежащие текущему пользователю."""
-        return UserMessage.objects.filter(owner=self.request.user)
+        """
+        Возвращает сообщения, принадлежащие текущему пользователю.
+        """
+
+        cache_key = f'message_list_{self.request.user.id}'
+        cached_queryset = cache.get(cache_key)
+        if cached_queryset:
+            return cached_queryset
+
+        queryset = UserMessage.objects.filter(owner=self.request.user)
+        cache.set(cache_key, queryset, 60 * 15)  # Кэшировать на 15 минут
+        return queryset
 
 
 class MessageDetailView(DetailView):
@@ -26,6 +37,18 @@ class MessageDetailView(DetailView):
 
     model = UserMessage
     template_name = "user_messages/message_detail.html"
+
+    def get_object(self, queryset=None):
+        """Возвращает объект сообщения."""
+        cache_key = f'message_detail_{self.kwargs["pk"]}'
+        cached_object = cache.get(cache_key)
+        if cached_object:
+            return cached_object
+
+        obj = super().get_object(queryset)
+        cache.set(cache_key, obj, 60 * 15)  # Кэшировать на 15 минут
+        return obj
+
 
 
 class MessageCreateView(CreateView):

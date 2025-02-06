@@ -10,6 +10,7 @@ from django.views.generic import (
 )
 from .models import Client
 from .forms import ClientForm
+from django.core.cache import cache
 
 
 class ClientListView(LoginRequiredMixin, ListView):
@@ -19,12 +20,30 @@ class ClientListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Client.objects.filter(owner=self.request.user)
+        cache_key = f'client_list_{self.request.user.id}'
+        cached_queryset = cache.get(cache_key)
+        if cached_queryset:
+            return cached_queryset
+
+        queryset = Client.objects.filter(owner=self.request.user)
+        cache.set(cache_key, queryset, 60 * 15)  # Кэшировать на 15 минут
+        return queryset
+
 
 
 class ClientDetailView(LoginRequiredMixin, DetailView):
     model = Client
     template_name = "clients/client_detail.html"
+
+    def get_object(self, queryset=None):
+        cache_key = f'client_detail_{self.kwargs["pk"]}'
+        cached_object = cache.get(cache_key)
+        if cached_object:
+            return cached_object
+
+        obj = super().get_object(queryset)
+        cache.set(cache_key, obj, 60 * 15)  # Кэшировать на 15 минут
+        return obj
 
 
 class ClientCreateView(LoginRequiredMixin, CreateView):

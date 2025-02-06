@@ -14,21 +14,27 @@ from clients.models import Client
 from .models import Mailing, Attempt
 from .forms import MailingForm
 from .services import send_mail
+from django.core.cache import cache
 
 
 def home(request):
     """
     Отображает главную страницу с общими статистиками по рассылкам и клиентам.
     """
+    cache_key = 'home_stats'
+    cached_data = cache.get(cache_key)
+    if cached_data:
+        return render(request, "mailings/home.html", cached_data)
+
     total_mailings = Mailing.objects.count()
     active_mailings = Mailing.objects.filter(status="running").count()
     unique_clients = Client.objects.values("email").distinct().count()
-
     context = {
         "total_mailings": total_mailings,
         "active_mailings": active_mailings,
         "unique_clients": unique_clients,
     }
+    cache.set(cache_key, context, 60 * 15)  # Кэшировать на 15 минут
     return render(request, "mailings/home.html", context)
 
 
@@ -47,11 +53,20 @@ class HomeView(LoginRequiredMixin, ListView):
         """
         Возвращает список рассылок в зависимости от роли пользователя.
         """
+        cache_key = f'home_view_queryset_{self.request.user.id}'
+        cached_queryset = cache.get(cache_key)
+        if cached_queryset:
+            return cached_queryset
+
         if self.request.user.is_staff:
-            return Mailing.objects.all()
+            queryset = Mailing.objects.all()
         elif self.request.user.is_authenticated:
-            return Mailing.objects.filter(owner=self.request.user)
-        return Mailing.objects.none()
+            queryset = Mailing.objects.filter(owner=self.request.user)
+        else:
+            queryset = Mailing.objects.none()
+
+        cache.set(cache_key, queryset, 60 * 15)  # Кэшировать на 15 минут
+        return queryset
 
     def get_context_data(self, **kwargs):
         """
@@ -91,11 +106,20 @@ class MailingListView(ListView):
         """
         Возвращает список рассылок в зависимости от роли пользователя.
         """
+        cache_key = f'mailing_list_view_queryset_{self.request.user.id}'
+        cached_queryset = cache.get(cache_key)
+        if cached_queryset:
+            return cached_queryset
+
         if self.request.user.is_staff:
-            return Mailing.objects.all()
+            queryset = Mailing.objects.all()
         elif self.request.user.is_authenticated:
-            return Mailing.objects.filter(owner=self.request.user)
-        return Mailing.objects.none()
+            queryset = Mailing.objects.filter(owner=self.request.user)
+        else:
+            queryset = Mailing.objects.none()
+
+        cache.set(cache_key, queryset, 60 * 15)  # Кэшировать на 15 минут
+        return queryset
 
     def get_context_data(self, **kwargs):
         """
@@ -109,6 +133,7 @@ class MailingListView(ListView):
         return context
 
 
+
 class MailingDetailView(DetailView):
     """
     Отображает детали конкретной рассылки.
@@ -117,6 +142,20 @@ class MailingDetailView(DetailView):
     model = Mailing
     template_name = "mailings/mailing_detail.html"
     context_object_name = "mailing"
+
+    def get_object(self, queryset=None):
+        """
+        Возвращает объект рассылки.
+        """
+        cache_key = f'mailing_detail_view_object_{self.kwargs["pk"]}'
+        cached_object = cache.get(cache_key)
+        if cached_object:
+            return cached_object
+
+        obj = super().get_object(queryset)
+        cache.set(cache_key, obj, 60 * 15)  # Кэшировать на 15 минут
+        return obj
+
 
 
 class MailingCreateView(LoginRequiredMixin, CreateView):

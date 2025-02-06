@@ -20,6 +20,7 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from mailings.views import OwnerRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.core.cache import cache
 
 class BlogPostListView(PermissionRequiredMixin, ListView):
     permission_required = 'view_blogpost'
@@ -30,15 +31,23 @@ class BlogPostListView(PermissionRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset().order_by('-created_at')
+        cache_key = 'blogpost_list_{}'.format(self.request.user.is_authenticated)
+        cached_queryset = cache.get(cache_key)
+        if cached_queryset:
+            return cached_queryset
+
         if self.request.user.is_authenticated:
             if "drafts" in self.request.GET:
-                return queryset.filter(owner=self.request.user, is_published=False)
+                queryset = queryset.filter(owner=self.request.user, is_published=False)
             elif "published" in self.request.GET:
-                return queryset.filter(is_published=True)
+                queryset = queryset.filter(is_published=True)
             else:
-                return queryset.filter(is_published=True)
+                queryset = queryset.filter(is_published=True)
         else:
-            return queryset.filter(is_published=True)
+            queryset = queryset.filter(is_published=True)
+
+        cache.set(cache_key, queryset, 60 * 15)  # Кэшировать на 15 минут
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -48,6 +57,7 @@ class BlogPostListView(PermissionRequiredMixin, ListView):
             )
             context["published"] = BlogPost.objects.filter(is_published=True)
         return context
+
 
 
 class BlogPostDetailView(DetailView):
@@ -69,6 +79,11 @@ class BlogPostDetailView(DetailView):
             BlogPost: Объект поста.
         """
         obj = super().get_object(queryset)
+        cache_key = 'blogpost_detail_{}'.format(obj.pk)
+        cached_obj = cache.get(cache_key)
+        if cached_obj:
+            return cached_obj
+
         if self.request.user.is_authenticated:
             obj.views_count += 1
             obj.save()
@@ -80,6 +95,8 @@ class BlogPostDetailView(DetailView):
                     ["your_email@yandex.ru"],
                     fail_silently=False,
                 )
+
+        cache.set(cache_key, obj, 60 * 15)  # Кэшировать на 15 минут
         return obj
 
     def get_context_data(self, **kwargs):
@@ -92,6 +109,7 @@ class BlogPostDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context["author"] = self.object.owner
         return context
+
 
 class BlogPostCreateView(LoginRequiredMixin, CreateView):
     """

@@ -1,6 +1,6 @@
 import random
 import string
-
+from django.core.cache import cache
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -31,7 +31,14 @@ def profile(request):
     Returns:
         Рендер страницы профиля с данными текущего пользователя.
     """
-    return render(request, "users/profile.html", {"user": request.user})
+    cache_key = f'user_profile_{request.user.id}'
+    cached_data = cache.get(cache_key)
+    if cached_data:
+        return render(request, "users/profile.html", cached_data)
+
+    context = {"user": request.user}
+    cache.set(cache_key, context, 60 * 15)  # Кэшировать на 15 минут
+    return render(request, "users/profile.html", context)
 
 
 class CustomLoginView(LoginView):
