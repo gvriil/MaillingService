@@ -1,0 +1,13 @@
+{% extends 'mailings/base.html' %}
+
+{% block title %}{{ client.name }}{% endblock %}
+
+{% block content %}
+<h1>{{ client.name }}</h1>
+<p><strong>Email:</strong> {{ client.email }}</p>
+<p><strong>Phone Number:</strong> {{ client.phone_number }}</p>
+<p><strong>Created At:</strong> {{ client.created_at }}</p>
+<p><strong>Updated At:</strong> {{ client.updated_at }}</p>
+<a href="{% url 'clients:client_update' client.pk %}" class="btn btn-primary">Edit</a>
+<a href="{% url 'clients:client_delete' client.pk %}" class="btn btn-danger">Delete</a>
+{% endblock %}

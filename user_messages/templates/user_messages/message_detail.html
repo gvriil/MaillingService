@@ -1,0 +1,12 @@
+{% extends 'mailings/base.html' %}
+
+{% block content %}
+<div class="container mt-3">
+    <h2>{{ object.subject }}</h2>
+    <p>{{ object.body }}</p>
+    <div>
+        <a href="{% url 'user_messages:update' object.pk %}" class="btn btn-primary">Edit</a>
+        <a href="{% url 'user_messages:delete' object.pk %}" class="btn btn-danger">Delete</a>
+    </div>
+</div>
+{% endblock %}

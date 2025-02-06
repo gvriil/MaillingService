@@ -1,0 +1,9 @@
+{% extends 'mailings/base.html' %}
+
+{% block content %}
+<h2>Profile Page</h2>
+<p>Welcome, {{ user.username }}!</p>
+<p>Email: {{ user.email }}</p>
+<a href="{% url 'users:user_edit' %}" class="btn btn-outline-primary">Редактировать профиль</a>
+<a href="{% url 'users:user_delete' %}" class="btn btn-outline-danger">Удалить аккаунт</a>
+{% endblock %}

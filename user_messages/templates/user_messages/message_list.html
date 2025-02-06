@@ -1,0 +1,29 @@
+{% extends 'mailings/base.html' %}
+
+{% block content %}
+<div class="container mt-3">
+    <h2>Messages</h2>
+    <a href="{% url 'user_messages:create' %}" class="btn btn-primary">Create New Message</a>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Subject</th>
+            <th>Details</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for message in object_list %}
+        <tr>
+            <td>{{ message.subject }}</td>
+            <td><a href="{% url 'user_messages:detail' message.pk %}">View Details</a></td>
+            <td>
+                <a href="{% url 'user_messages:update' message.pk %}" class="btn btn-sm btn-secondary">Edit</a>
+                <a href="{% url 'user_messages:delete' message.pk %}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

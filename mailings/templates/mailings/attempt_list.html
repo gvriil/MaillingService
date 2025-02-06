@@ -1,0 +1,46 @@
+{% extends 'mailings/base.html' %}
+
+{% block content %}
+  <h2>Попытки рассылок</h2>
+
+  <p>Всего попыток: {{ total_attempts }}</p>
+  <p>Успешных попыток: {{ successful_attempts }}</p>
+  <p>Неуспешных попыток: {{ failed_attempts }}</p>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Дата и время</th>
+        <th>Статус</th>
+        <th>Ответ сервера</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for attempt in attempts %}
+        <tr>
+          <td>{{ attempt.date_time }}</td>
+          <td>{{ attempt.status }}</td>
+          <td>{{ attempt.server_response }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if attempts.has_other_pages %}
+    <div class="pagination">
+      <span class="step-links">
+        {% if attempts.has_previous %}
+          <a href="?page=1">&laquo; first</a>
+          <a href="?page={{ attempts.previous_page_number }}">previous</a>
+        {% endif %}
+        <span class="current">
+          Page {{ attempts.number }} of {{ attempts.paginator.num_pages }}.
+        </span>
+        {% if attempts.has_next %}
+          <a href="?page={{ attempts.next_page_number }}">next</a>
+          <a href="?page={{ attempts.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+      </span>
+    </div>
+  {% endif %}
+{% endblock %}

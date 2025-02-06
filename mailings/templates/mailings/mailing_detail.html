@@ -1,0 +1,13 @@
+{% extends 'mailings/base.html' %}
+{% block content %}
+<h2>Тема: {{ mailing.message.subject }}</h2>
+<h3>Текст: {{ mailing.message.body }}</h3>
+<p>Статус: {{ mailing.status }}</p>
+
+{% if mailing.status == 'created' %}
+    <a href="{% url 'mailings:send_bulk_mail' mailing.pk %}" class="btn btn-primary">Отправить рассылку</a>
+{% endif %}
+
+<a href="{% url 'mailings:mailing_list' %}" class="btn btn-secondary">Назад к списку рассылок</a>
+{% endblock %}
+

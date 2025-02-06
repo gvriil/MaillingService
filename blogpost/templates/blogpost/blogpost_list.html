@@ -1,0 +1,58 @@
+{% extends 'mailings/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h2>Блог</h2>
+            {% if user.is_authenticated %}
+                <a href="{% url 'blogpost:blogpost_create' %}" class="btn btn-outline-primary">Новая публикация</a>
+                <a href="{% url 'blogpost:blogpost_list' %}?drafts=true" class="btn btn-outline-secondary">Мои черновики</a>
+                <a href="{% url 'blogpost:blogpost_list' %}?published=true" class="btn btn-outline-success">Публикации</a>
+            {% else %}
+                <a href="{% url 'users:login' %}" class="btn btn-primary">Войти</a>
+                <a href="{% url 'users:register' %}" class="btn btn-info">Регистрация</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% if 'drafts' in request.GET %}
+            <h3>Мои черновики</h3>
+            {% if drafts %}
+                {% for post in drafts %}
+                    {% include 'blogpost/_post_card.html' with post=post %}
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <p>Нет черновиков.</p>
+                </div>
+            {% endif %}
+        {% elif 'published' in request.GET %}
+            <h3>Публикации</h3>
+            {% if published %}
+                {% for post in published %}
+                    {% include 'blogpost/_post_card.html' with post=post %}
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <p>Нет опубликованных постов.</p>
+                </div>
+            {% endif %}
+        {% else %}
+            <h3>Все публикации</h3>
+            {% if object_list %}
+                {% for post in object_list %}
+                    {% include 'blogpost/_post_card.html' with post=post %}
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <p>Нет постов.</p>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

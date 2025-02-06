@@ -1,0 +1,136 @@
+.
+├── blogpost
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── templates
+│   │   └── blogpost
+│   ├── urls.py
+│   └── views.py
+├── clients
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── templates
+│   │   ├── base.html
+│   │   └── clients
+│   ├── urls.py
+│   └── views.py
+├── config
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── mailings
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── management
+│   │   ├── __init__.py
+│   │   └── commands
+│   ├── models.py
+│   ├── services.py
+│   ├── tasks.py
+│   ├── templates
+│   │   └── mailings
+│   ├── urls.py
+│   └── views.py
+├── manage.py
+├── media
+│   └── blog_previews
+│       ├── 09-06-24-bereg--чиж.png
+│       ├── 09-06-24-bereg--чиж_8g4bIKq.png
+│       ├── 09-06-24-bereg--чиж_jSWir8g.png
+│       ├── 2024-07-12_1.43.39_AM.jpg
+│       ├── 20240928_181316.jpg
+│       ├── 20241026_143234.jpg
+│       ├── Anya1.png
+│       ├── IG5FY_sWxaromdj8_IYNL_MM76WUM2gynWU9YMxdNx5vvMCWvLZlPnRcVS_J15A.jpeg
+│       ├── IMG_0037.JPG
+│       ├── IMG_1021.JPG
+│       ├── IMG_5533.JPG
+│       ├── IMG_7355.JPG
+│       ├── IMG_8550_3.jpg
+│       ├── IMG_8909_1.JPG
+│       ├── Sprint_1.jpg
+│       ├── Sprint_1_75Om2T5.jpg
+│       ├── Sprint_1_JWwoFbF.jpg
+│       ├── Sprint_1_uX7aHCu.jpg
+│       ├── cover.png
+│       ├── image-65.png
+│       └── kaisou_at_bcr_24.jpg
+├── project_structure.txt
+├── project_tree.txt
+├── requirements.txt
+├── static
+│   ├── css
+│   │   └── bootstrap.min.css
+│   ├── images
+│   │   └── stub.png
+│   └── js
+│       ├── bootstrap.bundle.min.js
+│       └── like_script.js
+├── user_messages
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── templates
+│   │   ├── base.html
+│   │   └── user_messages
+│   ├── urls.py
+│   └── views.py
+├── users
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── management
+│   │   ├── __init__.py
+│   │   └── commands
+│   ├── models.py
+│   ├── templates
+│   │   └── users
+│   ├── urls.py
+│   └── views.py
+└── venv
+    ├── bin
+    │   ├── Activate.ps1
+    │   ├── activate
+    │   ├── activate.csh
+    │   ├── activate.fish
+    │   ├── black
+    │   ├── blackd
+    │   ├── django-admin
+    │   ├── dotenv
+    │   ├── flake8
+    │   ├── ipython
+    │   ├── ipython3
+    │   ├── pip
+    │   ├── pip3
+    │   ├── pip3.13
+    │   ├── pycodestyle
+    │   ├── pyflakes
+    │   ├── pygmentize
+    │   ├── python -> python3.13
+    │   ├── python3 -> python3.13
+    │   ├── python3.13 -> /opt/homebrew/opt/python@3.13/bin/python3.13
+    │   ├── slugify
+    │   ├── sqlformat
+    │   ├── unidecode
+    │   └── wheel
+    ├── include
+    │   └── python3.13
+    ├── lib
+    │   └── python3.13
+    ├── pyvenv.cfg
+    └── share
+        └── man
+
+35 directories, 99 files

@@ -1,0 +1,60 @@
+{% extends 'mailings/base.html' %}
+{% block content %}
+<div class="container">
+    <h1>{{ object.title }}</h1>
+
+    {% if object.preview %}
+        <img src="{{ object.preview.url }}" alt="Preview" class="img-fluid">
+    {% endif %}
+
+    <p>{{ object.content }}</p>
+
+    <div>
+        {% if user.is_authenticated and user == object.owner %}
+            <a href="{% url 'blogpost:blogpost_edit' object.pk %}" class="btn btn-primary">Редактировать</a>
+            <a href="{% url 'blogpost:blogpost_delete' object.pk %}" class="btn btn-danger">Удалить</a>
+        {% endif %}
+    </div>
+
+    {% if user.is_authenticated %}
+        <span class="like-button" data-model-type="post" data-model-id="{{ object.pk }}" style="cursor: pointer;">
+            <i class="{% if user in object.likes.all %}fas{% else %}far{% endif %} fa-heart" style="color: {% if user in object.likes.all %}red{% else %}inherit{% endif %};"></i>
+            <span class="like-count">{{ object.likes.count }}</span>
+            <p>Автор: {{ author.username }}</p>
+        </span>
+    {% endif %}
+
+    <p class="card-text"><strong>Status:</strong> {% if object.is_published %}Published{% else %}Draft{% endif %}</p>
+
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'blogpost:add_comment' object.pk %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="comment">Комментарий</label>
+                <textarea class="form-control" id="comment" name="text" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+    {% else %}
+        <p>Пожалуйста, <a href="{% url 'users:login' %}">войдите</a>, чтобы оставить комментарий.</p>
+    {% endif %}
+
+    <h3>Комментарии:</h3>
+    <div id="comments">
+        {% for comment in object.comments.all %}
+            <div class="comment mb-3">
+                <p><strong>{{ comment.author.username }}</strong>: {{ comment.text }}</p>
+                <small>{{ comment.created_at }}</small>
+                {% if user.is_authenticated %}
+                    <span class="like-button" data-model-type="comment" data-model-id="{{ comment.pk }}" style="cursor: pointer;">
+                        <i class="{% if user in comment.likes.all %}fas{% else %}far{% endif %} fa-heart" style="color: {% if user in comment.likes.all %}red{% else %}inherit{% endif %};"></i>
+                        <span class="like-count">{{ comment.likes.count }}</span>
+                    </span>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>Нет комментариев.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

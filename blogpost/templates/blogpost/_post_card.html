@@ -1,0 +1,36 @@
+<div class="col-xl-3 col-lg-4 col-md-6">
+    <div class="card h-100">
+        {% if post.preview %}
+            <img src="{{ post.preview.url }}" class="card-img-top" alt="{{ post.title }}">
+        {% endif %}
+
+        <div class="card-body">
+            <h5 class="card-title">
+                <a href="{% url 'blogpost:blogpost_detail' post.pk %}">{{ post.title }}</a>
+            </h5>
+            <p class="card-text">{{ post.content|truncatewords:20 }}</p>
+            <p class="card-text">
+                <strong>Status:</strong>
+                {% if post.is_published %}Published{% else %}Draft{% endif %}
+            </p>
+        </div>
+
+        <div class="card-footer text-muted">
+            <strong>{{ post.created_at|date:"Y-M-d" }}</strong>
+            {% if user.is_authenticated %}
+                <span class="like-button" data-model-type="post" data-model-id="{{ post.pk }}" style="cursor: pointer;">
+                    <i class="{% if user in post.likes.all %}fas{% else %}far{% endif %} fa-heart"
+                       style="color: {% if user in post.likes.all %}red{% else %}inherit{% endif %};"></i>
+                    <span class="like-count">{{ post.likes.count }}</span>
+                </span>
+            {% endif %}
+        </div>
+
+        {% if user.is_authenticated and user == post.owner %}
+            <div class="card-footer">
+                <a href="{% url 'blogpost:blogpost_edit' post.pk %}" class="btn btn-primary">Редактировать</a>
+                <a href="{% url 'blogpost:blogpost_delete' post.pk %}" class="btn btn-danger">Удалить</a>
+            </div>
+        {% endif %}
+    </div>
+</div>

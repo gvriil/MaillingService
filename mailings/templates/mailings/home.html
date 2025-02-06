@@ -1,0 +1,41 @@
+{% extends 'mailings/base.html' %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    <div class="container mt-3">
+        <h1>Главная страница</h1>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Всего рассылок</h5>
+                        <p class="card-text">{{ total_mailings }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Активные рассылки</h5>
+                        <p class="card-text">{{ active_mailings }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Уникальные клиенты</h5>
+                        <p class="card-text">{{ unique_clients }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="container mt-3">
+        <h3>Чтобы просмотреть эту страницу, пожалуйста, <a href="{% url 'users:login' %}">войдите в систему</a>.</h3>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'mailings/base.html' %}
+
+{% block title %}Список рассылок{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h2>Рассылки</h2>
+    {% if user.is_authenticated %}
+        <a href="{% url 'mailings:mailing_add' %}" class="btn btn-primary">Создать рассылку</a>
+        <a href="{% url 'user_messages:create' %}" class="btn btn-primary">Создать сообщение</a>
+        <a href="{% url 'user_messages:list' %}" class="btn btn-info">Просмотр сообщений</a>
+    {% else %}
+        <a href="{% url 'users:login' %}" class="btn btn-primary">Вход</a>
+        <a href="{% url 'users:register' %}" class="btn btn-info">Регистрация</a>
+    {% endif %}
+
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th>Тема</th>
+                <th>Детали</th>
+                <th>Статус</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mailing in mailings %}
+            <tr>
+                <td>{{ mailing.message.subject }}</td>
+                <td>{{ mailing.start_datetime }}</td>
+                <td>{{ mailing.status }}</td>
+                <td>
+                    <a href="{% url 'mailings:mailing_detail' mailing.pk %}" class="btn btn-info">Подробнее</a>
+                    {% if mailing.status == 'running' %}
+                        <a href="{% url 'mailings:deactivate' mailing.pk %}" class="btn btn-warning">Деактивировать</a>
+                    {% else %}
+                        <a href="{% url 'mailings:activate' mailing.pk %}" class="btn btn-secondary">Активировать</a>
+                    {% endif %}
+                    {% if user == mailing.owner or user.is_staff %}
+                        <a href="{% url 'mailings:mailing_update' mailing.pk %}" class="btn btn-secondary">Редактировать</a>
+                        <a href="{% url 'mailings:mailing_delete' mailing.pk %}" class="btn btn-danger">Удалить</a>
+                    {% endif %}
+                    <a href="{% url 'mailings:send_bulk_mail' mailing.pk %}" class="btn btn-primary">Отправить рассылку</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">Нет доступных рассылок.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
